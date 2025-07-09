@@ -9,8 +9,9 @@ in vec2 lmcoord;
 in vec2 texcoord;
 in vec4 glcolor;
 
-/* RENDERTARGETS: 0 */
+/* RENDERTARGETS: 0,2 */
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 copy; // copy to do processing to later separately
 
 void main() {
 	color = texture(gtexture, texcoord) * glcolor;
@@ -18,4 +19,5 @@ void main() {
 	if (color.a < alphaTestRef) {
 		discard;
 	}
+  copy = color;
 }
