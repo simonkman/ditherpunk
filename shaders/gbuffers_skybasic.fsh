@@ -25,8 +25,10 @@ vec3 screenToView(vec3 screenPos) {
 	return tmp.xyz / tmp.w;
 }
 
-/* RENDERTARGETS: 0 */
+/* RENDERTARGETS: 0,2,4 */
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 colorcopy; // copy to do processing to later separately
+layout(location = 2) out vec4 depth; // write to channel 2 for later processing
 
 void main() {
 	if (renderStage == MC_RENDER_STAGE_STARS) {
@@ -35,4 +37,6 @@ void main() {
 		vec3 pos = screenToView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), 1.0));
 		color = vec4(calcSkyColor(normalize(pos)), 1.0);
 	}
+  colorcopy = color;
+  depth.g = gl_FragCoord.z;
 }

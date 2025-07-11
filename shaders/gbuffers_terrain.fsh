@@ -9,9 +9,10 @@ in vec2 lmcoord;
 in vec2 texcoord;
 in vec4 glcolor;
 
-/* RENDERTARGETS: 0,1 */
+/* RENDERTARGETS: 0,1,4 */
 layout(location = 0) out vec4 color;
-layout(location = 1) out vec4 copy; // copy to do processing to later separately
+layout(location = 1) out vec4 colorcopy; // copy to do processing to later separately
+layout(location = 2) out vec4 depth; // write to channel 1 for later processing
 
 void main() {
 	color = texture(gtexture, texcoord) * glcolor;
@@ -19,5 +20,6 @@ void main() {
 	if (color.a < alphaTestRef) {
 		discard;
 	}
-  copy = color;
+  colorcopy = color;
+  depth.r = gl_FragCoord.z;
 }
