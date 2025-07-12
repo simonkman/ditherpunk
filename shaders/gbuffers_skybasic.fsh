@@ -27,9 +27,10 @@ vec3 screenToView(vec3 screenPos) {
 	return tmp.xyz / tmp.w;
 }
 
-/* RENDERTARGETS: 0,2 */
+/* RENDERTARGETS: 0,2,1 */
 layout(location = 0) out vec4 color;
 layout(location = 1) out vec4 cutouts; // cutouts to break up image later
+layout(location = 2) out vec4 colorcopy; // copy for sobel filter
 
 void main() {
 	if (renderStage == MC_RENDER_STAGE_STARS) {
@@ -47,4 +48,5 @@ void main() {
   #if GBUFFERS_SKYBASIC_LAYER == 3
   cutouts = vec4(0, 0, 1, 1);
   #endif
+  colorcopy = color;
 }
