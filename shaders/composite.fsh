@@ -194,4 +194,11 @@ void main() {
   color = colorOne * cutouts.r + colorTwo * cutouts.g + colorThree * cutouts.b;
   vec4 trans = transOne * trans_cutouts.r + transTwo * trans_cutouts.g + transThree * trans_cutouts.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
+
+  #ifdef DISPLAY_OPAQUE_CUTOUTS
+  color = cutouts;
+  #endif
+  #ifdef DISPLAY_TRANSPARENT_CUTOUTS
+  color = trans_cutouts;
+  #endif
 }
