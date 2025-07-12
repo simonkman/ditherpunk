@@ -12,9 +12,6 @@ const mat3 sobelY = mat3(-1,  0,  1,
                          -2,  0,  2,
                          -1,  0,  1);
 
-// scaling to normalize magniutde of sobel
-const float sobelScale = sqrt(2 * (1.0 / (8.0 * 8.0)));
-
 // Compute the convolution at texcoord on the grayscale (Luminance) image.
 // src should already be grayscale, computations will be performed using its r component
 // fragcoord should be from gl_FragCoord, with pixels being on integers instead of +0.5, +0.5

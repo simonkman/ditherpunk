@@ -3,9 +3,10 @@
 #include /lib/settings.glsl
 #include /lib/dither.glsl
 #include /lib/util.glsl
+#include /lib/convolution.glsl
 
 uniform sampler2D colortex0;  // all opaque passes
-uniform sampler2D colortex1;  // completed render pass for use in sobel filter
+uniform sampler2D colortex1;  // layers/cutouts for sobel filter edges
 uniform sampler2D colortex10; // transparent pass, was supposed to be colortex1 but alpha wasn't working on it?
 uniform sampler2D colortex2;  // cutouts for opaque compositing, layers (1,2,3) are the (r,g,b) components
 uniform sampler2D colortex3;  // cutouts for transparent compositing, layers (1,2,3) are the (r,g,b) components
@@ -16,6 +17,7 @@ uniform float viewHeight;
 uniform float viewWidth;
 
 /*
+const int colortex1Format  = R8;
 const int colortex4Format  = RGB8;
 const int colortex11Format = R16;
 */
@@ -23,9 +25,18 @@ const int colortex11Format = R16;
 in vec2 texcoord;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 
-/* RENDERTARGETS: 0,11 */
+const float edgeThreshold = EDGE_DARK_LIGHT_THRESHOLD / 255.0;
+const vec4 lightEdgeColor = vec4(EDGE_LIGHT_R / 255.0,
+                                 EDGE_LIGHT_G / 255.0,
+                                 EDGE_LIGHT_B / 255.0,
+                                 1);
+const vec4 darkEdgeColor  = vec4(EDGE_DARK_R  / 255.0,
+                                 EDGE_DARK_G  / 255.0,
+                                 EDGE_DARK_B  / 255.0,
+                                 1);
+
+/* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
-layout(location = 1) out float edges;
 
 // ==========DITHER FUNCTIONS==========
 // dither functions for each layer
@@ -198,8 +209,22 @@ void main() {
   vec4 trans = transOne * trans_cutouts.r + transTwo * trans_cutouts.g + transThree * trans_cutouts.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
 
-  // grayscale image copy for sobel filter
-  edges = luminance(srgbToLinear(texture(colortex1, texcoord).rgb));
+  #ifdef DRAW_EDGES
+  // edge detection and drawing
+  vec2 grad;
+  grad.x = grayConvolve3(sobelX, colortex1, gl_FragCoord.xy);
+  grad.y = grayConvolve3(sobelY, colortex1, gl_FragCoord.xy);
+  float edges = length(grad);
+  // compute edge color
+  // need to composite a completed grayscale image for this
+  vec4 grayTrans = texture(colortex10, texcoord);
+  float grayComplete = luminance(texture(colortex0, texcoord).rgb * (1 - grayTrans.a) + grayTrans.rgb);
+  float edgeColorSwitch = step(edgeThreshold, grayComplete);
+  vec4 edgeColor       = darkEdgeColor * edgeColorSwitch + lightEdgeColor * (1 - edgeColorSwitch);
+  // draw the edges
+  float edgeSwitch = step(0.01, edges);
+  color = edgeColor * edgeSwitch + color * (1 - edgeSwitch);
+  #endif
 
   #ifdef DISPLAY_OPAQUE_CUTOUTS
   color = cutouts;

@@ -1,6 +1,7 @@
 #version 330 compatibility
 
 #include /lib/settings.glsl
+#include /lib/edge_layers.glsl
 
 uniform sampler2D lightmap;
 uniform sampler2D gtexture;
@@ -14,7 +15,7 @@ in vec4 glcolor;
 /* RENDERTARGETS: 0,2,1 */
 layout(location = 0) out vec4 color;
 layout(location = 1) out vec4 cutouts; // cutouts to break up image later
-layout(location = 2) out vec4 colorcopy; // copy for sobel filter
+layout(location = 2) out vec4 edgeLayers; // copy for sobel filter
 
 void main() {
 	color = texture(gtexture, texcoord) * glcolor;
@@ -31,5 +32,5 @@ void main() {
   #if GBUFFERS_ARMOR_GLINT_LAYER == 3
   cutouts = vec4(0, 0, 1, 1);
   #endif
-  colorcopy = color;
+  edgeLayers = armorGlint;
 }
