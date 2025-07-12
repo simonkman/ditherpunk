@@ -1,3 +1,5 @@
+#ifndef LIB_DITHER_GLSL
+#define LIB_DITHER_GLSL
 // contains various noise textures and patterns to sample for dithering
 
 // index a matrix as a row major array with wrapping/tiling
@@ -63,5 +65,4 @@ float bayer16(vec2 pos) {
 
   return pat[tileMatrix(pos, n)];
 }
-
-
+#endif

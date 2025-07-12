@@ -1,3 +1,5 @@
+#ifndef LIB_SETTINGS_GLSL
+#define LIB_SETTINGS_GLSL
 // preprocesser directives for user options
 
 // Dither types
@@ -80,3 +82,4 @@ const float layerThreeScaleOffset = 1;
 
 // number of colors per channel
 const float layerThreeNumColors = 2 << (LAYER_THREE_BIT_DEPTH - 1);
+#endif
