@@ -4,12 +4,12 @@
 #include /lib/dither.glsl
 #include /lib/util.glsl
 
-uniform sampler2D colortex0; // all passes
+uniform sampler2D colortex0;  // all opaque passes
 uniform sampler2D colortex10; // transparent pass, was supposed to be colortex1 but alpha just doesn't work on it?
-uniform sampler2D colortex2; // cutouts for opaque compositing, layers (1,2,3) are the (r,g,b) components
-uniform sampler2D colortex3; // cutouts for transparent compositing, layers (1,2,3) are the (r,g,b) components
-uniform sampler2D colortex4; // blue noise
-uniform sampler2D noisetex;
+uniform sampler2D colortex2;  // cutouts for opaque compositing, layers (1,2,3) are the (r,g,b) components
+uniform sampler2D colortex3;  // cutouts for transparent compositing, layers (1,2,3) are the (r,g,b) components
+uniform sampler2D colortex4;  // blue noise
+uniform sampler2D noisetex;   // white noise
 
 uniform float viewHeight;
 uniform float viewWidth;
