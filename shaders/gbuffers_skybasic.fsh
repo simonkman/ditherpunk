@@ -1,5 +1,7 @@
 #version 330 compatibility
 
+#include /lib/settings.glsl
+
 uniform int renderStage;
 uniform float viewHeight;
 uniform float viewWidth;
@@ -25,10 +27,9 @@ vec3 screenToView(vec3 screenPos) {
 	return tmp.xyz / tmp.w;
 }
 
-/* RENDERTARGETS: 0,2,4 */
+/* RENDERTARGETS: 0,2 */
 layout(location = 0) out vec4 color;
-layout(location = 1) out vec4 colorcopy; // copy to do processing to later separately
-layout(location = 2) out vec4 depth; // write to channel 2 for later processing
+layout(location = 1) out vec4 cutouts; // cutouts to break up image later
 
 void main() {
 	if (renderStage == MC_RENDER_STAGE_STARS) {
@@ -37,6 +38,13 @@ void main() {
 		vec3 pos = screenToView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), 1.0));
 		color = vec4(calcSkyColor(normalize(pos)), 1.0);
 	}
-  colorcopy = color;
-  depth.g = gl_FragCoord.z;
+  #if GBUFFERS_SKYBASIC_LAYER == 1
+  cutouts = vec4(1, 0, 0, 1);
+  #endif
+  #if GBUFFERS_SKYBASIC_LAYER == 2
+  cutouts = vec4(0, 1, 0, 1);
+  #endif
+  #if GBUFFERS_SKYBASIC_LAYER == 3
+  cutouts = vec4(0, 0, 1, 1);
+  #endif
 }

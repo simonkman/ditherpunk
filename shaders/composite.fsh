@@ -5,19 +5,17 @@
 #include /lib/util.glsl
 
 uniform sampler2D colortex0; // all passes
-uniform sampler2D colortex1; // terrain pass
-uniform sampler2D colortex2; // everything else pass (for now)
-uniform sampler2D colortex3; // transparent pass
-uniform sampler2D colortex4; // depth values; (r,g) are for colortex 1 and 2 respectively
-uniform sampler2D colortex5; // blue noise
+uniform sampler2D colortex10; // transparent pass, was supposed to be colortex1 but alpha just doesn't work on it?
+uniform sampler2D colortex2; // cutouts for opaque compositing, layers (1,2,3) are the (r,g,b) components
+uniform sampler2D colortex3; // cutouts for transparent compositing, layers (1,2,3) are the (r,g,b) components
+uniform sampler2D colortex4; // blue noise
 uniform sampler2D noisetex;
 
 uniform float viewHeight;
 uniform float viewWidth;
 
 /*
-const int colortex4Format = RG32F;
-const int colortex5Format = RGB8;
+const int colortex4Format = RGB8;
 */
 
 in vec2 texcoord;
@@ -33,7 +31,7 @@ float layerOneDither(vec2 pos) {
   return texelFetch(noisetex, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
   #endif
   #if LAYER_ONE_DITHER == DITHER_BLUENOISE
-  return texelFetch(colortex5, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
+  return texelFetch(colortex4, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
   #endif
   #if LAYER_ONE_DITHER == DITHER_BAYER
     #if LAYER_ONE_BAYER_SIZE == 2
@@ -58,7 +56,7 @@ float layerTwoDither(vec2 pos) {
   return texelFetch(noisetex, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
   #endif
   #if LAYER_TWO_DITHER == DITHER_BLUENOISE
-  return texelFetch(colortex5, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
+  return texelFetch(colortex4, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
   #endif
   #if LAYER_TWO_DITHER == DITHER_BAYER
     #if LAYER_TWO_BAYER_SIZE == 2
@@ -83,7 +81,7 @@ float layerThreeDither(vec2 pos) {
   return texelFetch(noisetex, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
   #endif
   #if LAYER_THREE_DITHER == DITHER_BLUENOISE
-  return texelFetch(colortex5, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
+  return texelFetch(colortex4, ivec2(mod(pos, vec2(NOISE_SIZE))), 0).r;
   #endif
   #if LAYER_THREE_DITHER == DITHER_BAYER
     #if LAYER_THREE_BAYER_SIZE == 2
@@ -107,12 +105,12 @@ float layerThreeDither(vec2 pos) {
 // ===========LAYER HANDLING===========
 // handle each render layer separately to be composited later
 
-vec4 handleLayerOne() {
+vec4 handleLayerOne(sampler2D colortex) {
   vec4 color;
   // sample at downscaled resolution
   vec2 dsResolution = vec2(viewWidth, viewHeight) * LAYER_ONE_SCALE;
   vec2 dsTexcoord = uniformQuantize(texcoord, dsResolution + layerOneScaleOffset);
-	color = texture(colortex1, dsTexcoord);
+	color = texture(colortex, dsTexcoord);
   color.rgb = pow(color.rgb, vec3(2.2)); // convert sRGB to linear
 
   #ifdef LAYER_ONE_MONOCHROME
@@ -125,17 +123,17 @@ vec4 handleLayerOne() {
   vec3 noisy = clamp(color.rgb + (layerOneDither(dsTexcoord * dsResolution) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerOneNumColors));
   #endif
- 
+
   color.rgb = pow(color.rgb, vec3(1.0 / 2.2)); // convert to sRGB from linear
   return color;
 }
 
-vec4 handleLayerTwo() {
+vec4 handleLayerTwo(sampler2D colortex) {
   vec4 color;
   // sample at downscaled resolution
   vec2 dsResolution = vec2(viewWidth, viewHeight) * LAYER_TWO_SCALE;
   vec2 dsTexcoord = uniformQuantize(texcoord, dsResolution + layerTwoScaleOffset);
-	color = texture(colortex2, dsTexcoord);
+	color = texture(colortex, dsTexcoord);
   color.rgb = pow(color.rgb, vec3(2.2)); // convert sRGB to linear
 
   #ifdef LAYER_TWO_MONOCHROME
@@ -148,17 +146,17 @@ vec4 handleLayerTwo() {
   vec3 noisy = clamp(color.rgb + (layerTwoDither(dsTexcoord * dsResolution) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerTwoNumColors));
   #endif
- 
+
   color.rgb = pow(color.rgb, vec3(1.0 / 2.2)); // convert to sRGB from linear
   return color;
 }
 
-vec4 handleLayerThree() {
+vec4 handleLayerThree(sampler2D colortex) {
   vec4 color;
   // sample at downscaled resolution
   vec2 dsResolution = vec2(viewWidth, viewHeight) * LAYER_THREE_SCALE;
   vec2 dsTexcoord = uniformQuantize(texcoord, dsResolution + layerThreeScaleOffset);
-	color = texture(colortex3, dsTexcoord);
+	color = texture(colortex, dsTexcoord);
   color.rgb = pow(color.rgb, vec3(2.2)); // convert sRGB to linear
 
   #ifdef LAYER_THREE_MONOCHROME
@@ -171,7 +169,7 @@ vec4 handleLayerThree() {
   vec3 noisy = clamp(color.rgb + (layerThreeDither(dsTexcoord * dsResolution) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerThreeNumColors));
   #endif
- 
+
   color.rgb = pow(color.rgb, vec3(1.0 / 2.2)); // convert to sRGB from linear
   return color;
 }
@@ -179,16 +177,18 @@ vec4 handleLayerThree() {
 
 void main() {
   // compositing processed render layers
-  vec4 colorOne = handleLayerOne();
-  vec4 colorTwo = handleLayerTwo();
-  vec4 trans    = handleLayerThree();
-  vec4 depth = texture(colortex4, texcoord);
+  vec4 colorOne   = handleLayerOne(colortex0);
+  vec4 colorTwo   = handleLayerTwo(colortex0);
+  vec4 colorThree = handleLayerThree(colortex0);
+  vec4 transOne   = handleLayerOne(colortex10);
+  vec4 transTwo   = handleLayerTwo(colortex10);
+  vec4 transThree = handleLayerThree(colortex10);
 
-  // colorOne -= texture(colortex1, texcoord);
-  // colorTwo -= texture(colortex2, texcoord);
-  // trans    -= texture(colortex3, texcoord);
+	vec4 cutouts = texture(colortex2, texcoord);
+  vec4 trans_cutouts = texture(colortex3, texcoord);
 
-  float depthSwitch = float(depth.r > depth.g);
-  color = colorOne * depthSwitch + colorTwo * (1 - depthSwitch);
+  // composite cutouts and alpha blend transparent layers
+  color = colorOne * cutouts.r + colorTwo * cutouts.g + colorThree * cutouts.b;
+  vec4 trans = transOne * trans_cutouts.r + transTwo * trans_cutouts.g + transThree * trans_cutouts.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
 }

@@ -1,5 +1,7 @@
 #version 330 compatibility
 
+#include /lib/settings.glsl
+
 uniform sampler2D lightmap;
 uniform sampler2D gtexture;
 
@@ -9,9 +11,9 @@ in vec2 lmcoord;
 in vec2 texcoord;
 in vec4 glcolor;
 
-/* RENDERTARGETS: 0,3 */
+/* RENDERTARGETS: 10,3 */
 layout(location = 0) out vec4 color;
-layout(location = 1) out vec4 colorcopy; // copy to do processing to later separately
+layout(location = 1) out vec4 cutouts; // cutouts to break up image later
 
 void main() {
 	color = texture(gtexture, texcoord) * glcolor;
@@ -19,5 +21,13 @@ void main() {
 	if (color.a < alphaTestRef) {
 		discard;
 	}
-  colorcopy = color;
+  #if GBUFFERS_WATER_LAYER == 1
+  cutouts = vec4(1, 0, 0, 1);
+  #endif
+  #if GBUFFERS_WATER_LAYER == 2
+  cutouts = vec4(0, 1, 0, 1);
+  #endif
+  #if GBUFFERS_WATER_LAYER == 3
+  cutouts = vec4(0, 0, 1, 1);
+  #endif
 }
