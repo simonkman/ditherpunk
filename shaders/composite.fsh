@@ -19,6 +19,7 @@ const int colortex4Format = RGB8;
 */
 
 in vec2 texcoord;
+layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
@@ -108,19 +109,19 @@ float layerThreeDither(vec2 pos) {
 vec4 handleLayerOne(sampler2D colortex) {
   vec4 color;
   // sample at downscaled resolution
-  vec2 dsResolution = vec2(viewWidth, viewHeight) * LAYER_ONE_SCALE;
-  vec2 dsTexcoord = uniformQuantize(texcoord, dsResolution + layerOneScaleOffset);
-	color = texture(colortex, dsTexcoord);
+  vec2 tmp = ceil(gl_FragCoord.xy * LAYER_ONE_SCALE) / LAYER_ONE_SCALE;
+  ivec2 dsFragCoord = ivec2(tmp.x, tmp.y);
+  color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = pow(color.rgb, vec3(2.2)); // convert sRGB to linear
 
   #ifdef LAYER_ONE_MONOCHROME
   float value = dot(color.rgb, luminanceConvert);
-  float noisy = clamp(value + (layerOneDither(dsTexcoord * dsResolution) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
+  float noisy = clamp(value + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerOneNumColors));
   #endif
 
   #ifndef LAYER_ONE_MONOCHROME
-  vec3 noisy = clamp(color.rgb + (layerOneDither(dsTexcoord * dsResolution) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
+  vec3 noisy = clamp(color.rgb + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerOneNumColors));
   #endif
 
@@ -131,19 +132,19 @@ vec4 handleLayerOne(sampler2D colortex) {
 vec4 handleLayerTwo(sampler2D colortex) {
   vec4 color;
   // sample at downscaled resolution
-  vec2 dsResolution = vec2(viewWidth, viewHeight) * LAYER_TWO_SCALE;
-  vec2 dsTexcoord = uniformQuantize(texcoord, dsResolution + layerTwoScaleOffset);
-	color = texture(colortex, dsTexcoord);
+  vec2 tmp = ceil(gl_FragCoord.xy * LAYER_TWO_SCALE) / LAYER_TWO_SCALE;
+  ivec2 dsFragCoord = ivec2(tmp.x, tmp.y);
+  color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = pow(color.rgb, vec3(2.2)); // convert sRGB to linear
 
   #ifdef LAYER_TWO_MONOCHROME
   float value = dot(color.rgb, luminanceConvert);
-  float noisy = clamp(value + (layerTwoDither(dsTexcoord * dsResolution) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
+  float noisy = clamp(value + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerTwoNumColors));
   #endif
 
   #ifndef LAYER_TWO_MONOCHROME
-  vec3 noisy = clamp(color.rgb + (layerTwoDither(dsTexcoord * dsResolution) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
+  vec3 noisy = clamp(color.rgb + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerTwoNumColors));
   #endif
 
@@ -154,19 +155,19 @@ vec4 handleLayerTwo(sampler2D colortex) {
 vec4 handleLayerThree(sampler2D colortex) {
   vec4 color;
   // sample at downscaled resolution
-  vec2 dsResolution = vec2(viewWidth, viewHeight) * LAYER_THREE_SCALE;
-  vec2 dsTexcoord = uniformQuantize(texcoord, dsResolution + layerThreeScaleOffset);
-	color = texture(colortex, dsTexcoord);
+  vec2 tmp = ceil(gl_FragCoord.xy * LAYER_THREE_SCALE) / LAYER_THREE_SCALE;
+  ivec2 dsFragCoord = ivec2(tmp.x, tmp.y);
+  color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = pow(color.rgb, vec3(2.2)); // convert sRGB to linear
 
   #ifdef LAYER_THREE_MONOCHROME
   float value = dot(color.rgb, luminanceConvert);
-  float noisy = clamp(value + (layerThreeDither(dsTexcoord * dsResolution) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
+  float noisy = clamp(value + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerThreeNumColors));
   #endif
 
   #ifndef LAYER_THREE_MONOCHROME
-  vec3 noisy = clamp(color.rgb + (layerThreeDither(dsTexcoord * dsResolution) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
+  vec3 noisy = clamp(color.rgb + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerThreeNumColors));
   #endif
 
@@ -176,7 +177,7 @@ vec4 handleLayerThree(sampler2D colortex) {
 // =========LAYER HANDLING END=========
 
 void main() {
-  // compositing processed render layers
+  // process opaque and transparent layers
   vec4 colorOne   = handleLayerOne(colortex0);
   vec4 colorTwo   = handleLayerTwo(colortex0);
   vec4 colorThree = handleLayerThree(colortex0);
@@ -184,8 +185,10 @@ void main() {
   vec4 transTwo   = handleLayerTwo(colortex10);
   vec4 transThree = handleLayerThree(colortex10);
 
-	vec4 cutouts = texture(colortex2, texcoord);
-  vec4 trans_cutouts = texture(colortex3, texcoord);
+  vec2 tmp = ceil(gl_FragCoord.xy * CUTOUT_SCALE) / CUTOUT_SCALE;
+  ivec2 dsFragCoord = ivec2(tmp.x, tmp.y);
+	vec4 cutouts = texelFetch(colortex2, dsFragCoord, 0);
+  vec4 trans_cutouts = texelFetch(colortex3, dsFragCoord, 0);
 
   // composite cutouts and alpha blend transparent layers
   color = colorOne * cutouts.r + colorTwo * cutouts.g + colorThree * cutouts.b;
