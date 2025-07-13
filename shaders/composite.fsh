@@ -36,24 +36,12 @@ const vec4 darkEdgeColor  = vec4(EDGE_DARK_R  / 255.0,
                                  EDGE_DARK_B  / 255.0,
                                  1);
 // colormapping values derived from settings
-const vec3 lOneCmapLight   = vec3(LAYER_ONE_CMAP_LIGHT_R   / 255.0,
-                                  LAYER_ONE_CMAP_LIGHT_G   / 255.0,
-                                  LAYER_ONE_CMAP_LIGHT_B   / 255.0);
-const vec3 lOneCmapDark    = vec3(LAYER_ONE_CMAP_DARK_R    / 255.0,
-                                  LAYER_ONE_CMAP_DARK_G    / 255.0,
-                                  LAYER_ONE_CMAP_DARK_B    / 255.0);
-const vec3 lTwoCmapLight   = vec3(LAYER_TWO_CMAP_LIGHT_R   / 255.0,
-                                  LAYER_TWO_CMAP_LIGHT_G   / 255.0,
-                                  LAYER_TWO_CMAP_LIGHT_B   / 255.0);
-const vec3 lTwoCmapDark    = vec3(LAYER_TWO_CMAP_DARK_R    / 255.0,
-                                  LAYER_TWO_CMAP_DARK_G    / 255.0,
-                                  LAYER_TWO_CMAP_DARK_B    / 255.0);
-const vec3 lThreeCmapLight = vec3(LAYER_THREE_CMAP_LIGHT_R / 255.0,
-                                  LAYER_THREE_CMAP_LIGHT_G / 255.0,
-                                  LAYER_THREE_CMAP_LIGHT_B / 255.0);
-const vec3 lThreeCmapDark  = vec3(LAYER_THREE_CMAP_DARK_R  / 255.0,
-                                  LAYER_THREE_CMAP_DARK_G  / 255.0,
-                                  LAYER_THREE_CMAP_DARK_B  / 255.0);
+const vec3 cmapLight = vec3(CMAP_LIGHT_R   / 255.0,
+                            CMAP_LIGHT_G   / 255.0,
+                            CMAP_LIGHT_B   / 255.0);
+const vec3 cmapDark  = vec3(CMAP_DARK_R    / 255.0,
+                            CMAP_DARK_G    / 255.0,
+                            CMAP_DARK_B    / 255.0);
 
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
@@ -160,13 +148,6 @@ vec4 handleLayerOne(sampler2D colortex) {
   #endif
 
   color.rgb = linearToSrgb(color.rgb);
-
-  #ifdef LAYER_ONE_COLORMAP
-  #ifdef LAYER_ONE_MONOCHROME
-  float colorSwitch = step(0.5, color.r);
-  color.rgb = vec3(lOneCmapLight * colorSwitch + lOneCmapDark * (1 - colorSwitch));
-  #endif
-  #endif
   return color;
 }
 
@@ -190,13 +171,6 @@ vec4 handleLayerTwo(sampler2D colortex) {
   #endif
 
   color.rgb = linearToSrgb(color.rgb);
-
-  #ifdef LAYER_TWO_COLORMAP
-  #ifdef LAYER_TWO_MONOCHROME
-  float colorSwitch = step(0.5, color.r);
-  color.rgb = vec3(lTwoCmapLight * colorSwitch + lTwoCmapDark * (1 - colorSwitch));
-  #endif
-  #endif
   return color;
 }
 
@@ -220,13 +194,6 @@ vec4 handleLayerThree(sampler2D colortex) {
   #endif
 
   color.rgb = linearToSrgb(color.rgb);
-
-  #ifdef LAYER_THREE_COLORMAP
-  #ifdef LAYER_THREE_MONOCHROME
-  float colorSwitch = step(0.5, color.r);
-  color.rgb = vec3(lThreeCmapLight * colorSwitch + lThreeCmapDark * (1 - colorSwitch));
-  #endif
-  #endif
   return color;
 }
 // =========LAYER HANDLING END=========
@@ -250,6 +217,13 @@ void main() {
   vec4 trans = transOne * trans_cutouts.r + transTwo * trans_cutouts.g + transThree * trans_cutouts.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
 
+  #ifdef COLORMAP
+  #if defined LAYER_ONE_MONOCHROME && defined LAYER_TWO_MONOCHROME && defined LAYER_THREE_MONOCHROME
+  float colorSwitch = step(0.5, color.r);
+  color.rgb = vec3(cmapLight * colorSwitch + cmapDark * (1 - colorSwitch));
+  #endif
+  #endif
+
   #ifdef DRAW_EDGES
   // edge detection and drawing
   vec2 grad;
@@ -265,13 +239,6 @@ void main() {
   // draw the edges
   float edgeSwitch = step(0.01, edges);
   color = edgeColor * edgeSwitch + color * (1 - edgeSwitch);
-  #endif
-
-  #ifdef LAYER_ONE_COLORMAP
-  #ifdef LAYER_ONE_MONOCHROME
-  float colorSwitch = step(0.5, color.r);
-  color.rgb = vec3(lOneCmapLight * colorSwitch + lOneCmapDark * (1 - colorSwitch));
-  #endif
   #endif
 
   #ifdef DISPLAY_OPAQUE_CUTOUTS
