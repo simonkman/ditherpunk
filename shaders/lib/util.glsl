@@ -39,4 +39,11 @@ float srgbToLinear(float color) {
 float linearToSrgb(float color) {
   return pow(color, 1.0 / 2.2);
 }
+
+// linearizes depth z.
+// Most places say opengl has depth in range [-1,1], but
+// minecraft seems to have it in range [0,1]?
+float linearizeDepth(float z, float near, float far) {
+  return 2.0 * near / (near + far - z * (far - near));
+}
 #endif
