@@ -22,10 +22,12 @@ float grayConvolve3(mat3 kern, sampler2D src, vec2 fragcoord) {
   // we need to use the transpose of the matrix in convolution
 
   ivec2 coord = ivec2(fragcoord.x, fragcoord.y);
+  ivec2 dim   = textureSize(src, 0);
   float sum = 0.0;
   for (int x = -1; x <= 1; x++) {
     for (int y = -1; y <= 1; y++) {
-      float tex = texelFetch(src, coord + ivec2(x, y), 0).r;
+      // sample with edges extended so borders aren't drawn around the edge of screen with sobel
+      float tex = texelFetch(src, clamp(coord + ivec2(x, y), ivec2(0, 0), dim - 1), 0).r;
       sum += kern[1-y][x+1] * tex;
     }
   }
