@@ -11,6 +11,7 @@ uniform sampler2D colortex10; // transparent pass, was supposed to be colortex1 
 uniform sampler2D colortex2;  // cutouts for opaque compositing, layers (1,2,3) are the (r,g,b) components
 uniform sampler2D colortex3;  // cutouts for transparent compositing, layers (1,2,3) are the (r,g,b) components
 uniform sampler2D colortex11; // modified depth buffer
+uniform sampler2D colortex12; // normal data
 uniform sampler2D colortex4;  // blue noise
 uniform sampler2D noisetex;   // white noise
 
@@ -243,6 +244,12 @@ void main() {
   grad.y = grayConvolve3(sobelY, colortex11, gl_FragCoord.xy);
   edges += step(0.05, length(grad)); // value found via experimentation
   #endif
+  #ifdef EDGE_USE_NORMALS
+  // edge detect on normals
+  grad.x = grayConvolve3(sobelX, colortex12, gl_FragCoord.xy);
+  grad.y = grayConvolve3(sobelY, colortex12, gl_FragCoord.xy);
+  edges += step(0.01, length(grad)) * (1 - step(0.99, texture(colortex11, texcoord).r)); // ignore normals past depth threshold
+  #endif
 
   edges = clamp(edges, 0, 1);
   // compute edge color
@@ -263,5 +270,8 @@ void main() {
   #endif
   #ifdef DISPLAY_EDGES
   color = vec4(edges);
+  #endif
+  #ifdef DISPLAY_NORMALS
+  color = texture(colortex12, texcoord);
   #endif
 }

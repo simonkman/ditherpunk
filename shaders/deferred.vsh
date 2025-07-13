@@ -1,5 +1,7 @@
 #version 330 compatibility
 
+uniform mat4 gbufferModelViewInverse;
+
 out vec2 texcoord;
 
 void main() {

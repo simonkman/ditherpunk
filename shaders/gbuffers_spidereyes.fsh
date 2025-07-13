@@ -9,11 +9,13 @@ uniform float alphaTestRef = 0.1;
 
 in vec2 texcoord;
 in vec4 glcolor;
+in vec3 normal;
 
-/* RENDERTARGETS: 0,2,1 */
+/* RENDERTARGETS: 0,2,1,12 */
 layout(location = 0) out vec4 color;
 layout(location = 1) out vec4 cutouts; // cutouts to break up image later
 layout(location = 2) out vec4 edgeLayers; // copy for sobel filter
+layout(location = 3) out vec4 encodedNormal;
 
 void main() {
 	color = texture(gtexture, texcoord) * glcolor;
@@ -29,5 +31,6 @@ void main() {
   #if GBUFFERS_SPIDEREYES_LAYER == 3
   cutouts = vec4(0, 0, 1, 1);
   #endif
+  encodedNormal = vec4(normal * 0.5 + 0.5, 1.0);
   edgeLayers = spidereyes;
 }
