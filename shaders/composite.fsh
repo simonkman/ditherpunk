@@ -22,8 +22,6 @@ void main() {
 
   // need depth to be linear for sobel filter stuff
   depth = linearizeDepth(texture(depthtex0, texcoord).r, near, far);
-  float depthThreshold = step(EDGE_DEPTH_THRESHOLD, depth);
-  depth = depth * (1 - depthThreshold) + depthThreshold;
 
   // grayscale normals bcuz sobel needs grayscale
   normals = texture(colortex12, texcoord);

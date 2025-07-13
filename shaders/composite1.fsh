@@ -233,22 +233,35 @@ void main() {
   // edge detect on gbuffer render pass boundaries
   float edges = 0;
   vec2 grad;
+  float edge;
+  float depth = texture(colortex11, texcoord).r;
+  float depthThreshold = step(EDGE_DEPTH_THRESHOLD, depth);
   #ifdef EDGE_USE_GBUFFFER_BOUNDARIES
   grad.x = grayConvolve3(sobelX, colortex1, gl_FragCoord.xy);
   grad.y = grayConvolve3(sobelY, colortex1, gl_FragCoord.xy);
-  edges += step(0.01, length(grad));
+  edge = step(0.01, length(grad));
+  #ifdef EDGE_GBUFFER_USE_DEPTH
+  edge *= (1 - depthThreshold);
+  #endif
+  edges += edge;
   #endif
   #ifdef EDGE_USE_DEPTH
   // edge detect on linearized depth buffer
   grad.x = grayConvolve3(sobelX, colortex11, gl_FragCoord.xy);
   grad.y = grayConvolve3(sobelY, colortex11, gl_FragCoord.xy);
-  edges += step(0.05, length(grad)); // value found via experimentation
+  edge = step(0.05, length(grad)); // value found via experimentation
+  edge *= (1 - depthThreshold);
+  edges += edge;
   #endif
   #ifdef EDGE_USE_NORMALS
   // edge detect on normals
   grad.x = grayConvolve3(sobelX, colortex12, gl_FragCoord.xy);
   grad.y = grayConvolve3(sobelY, colortex12, gl_FragCoord.xy);
-  edges += step(0.01, length(grad)) * (1 - step(0.99, texture(colortex11, texcoord).r)); // ignore normals past depth threshold
+  edge = step(0.01, length(grad));
+  #ifdef EDGE_NORMALS_USE_DEPTH
+  edge *= (1 - depthThreshold);
+  #endif
+  edges += edge;
   #endif
 
   edges = clamp(edges, 0, 1);
@@ -273,5 +286,8 @@ void main() {
   #endif
   #ifdef DISPLAY_NORMALS
   color = texture(colortex12, texcoord);
+  #endif
+  #ifdef DISPLAY_DEPTH
+  color = vec4(texture(colortex11, texcoord).r);
   #endif
 }
