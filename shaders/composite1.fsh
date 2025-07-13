@@ -235,13 +235,13 @@ void main() {
   vec2 grad;
   float edge;
   float depth = texture(colortex11, texcoord).r;
-  float depthThreshold = step(EDGE_DEPTH_THRESHOLD, depth);
+  float depthCutoff = step(EDGE_DEPTH_FAR_CUTOFF, depth);
   #ifdef EDGE_USE_GBUFFFER_BOUNDARIES
   grad.x = grayConvolve3(sobelX, colortex1, gl_FragCoord.xy);
   grad.y = grayConvolve3(sobelY, colortex1, gl_FragCoord.xy);
   edge = step(0.01, length(grad));
   #ifdef EDGE_GBUFFER_USE_DEPTH
-  edge *= (1 - depthThreshold);
+  edge *= (1 - depthCutoff);
   #endif
   edges += edge;
   #endif
@@ -249,8 +249,8 @@ void main() {
   // edge detect on linearized depth buffer
   grad.x = grayConvolve3(sobelX, colortex11, gl_FragCoord.xy);
   grad.y = grayConvolve3(sobelY, colortex11, gl_FragCoord.xy);
-  edge = step(0.05, length(grad)); // value found via experimentation
-  edge *= (1 - depthThreshold);
+  edge = step(EDGE_DEPTH_THRESHOLD, length(grad));
+  edge *= (1 - depthCutoff);
   edges += edge;
   #endif
   #ifdef EDGE_USE_NORMALS
@@ -259,7 +259,7 @@ void main() {
   grad.y = grayConvolve3(sobelY, colortex12, gl_FragCoord.xy);
   edge = step(0.01, length(grad));
   #ifdef EDGE_NORMALS_USE_DEPTH
-  edge *= (1 - depthThreshold);
+  edge *= (1 - depthCutoff);
   #endif
   edges += edge;
   #endif
