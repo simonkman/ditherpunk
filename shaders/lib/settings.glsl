@@ -113,3 +113,16 @@ const float layerThreeNumColors = 2 << (LAYER_THREE_BIT_DEPTH - 1);
 #define GBUFFERS_WEATHER_LAYER      1 // [1 2 3]
 
 #endif
+
+// =============================
+// ======FORCE CHECK MACROS=====
+// =============================
+// Force check some macros cuz iris doesn't recognize
+// boolean options in settings unless at least one
+// #ifdef is performed on them
+#ifdef LAYER_ONE_MONOCHROME
+#endif
+#ifdef LAYER_TWO_MONOCHROME
+#endif
+#ifdef LAYER_THREE_MONOCHROME
+#endif

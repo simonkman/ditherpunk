@@ -141,13 +141,11 @@ vec4 handleLayerOne(sampler2D colortex) {
   color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = srgbToLinear(color.rgb);
 
-  #ifdef LAYER_ONE_MONOCHROME
+  #if defined LAYER_ONE_MONOCHROME || defined COLORMAP
   float value = luminance(color.rgb);
   float noisy = clamp(value + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerOneNumColors));
-  #endif
-
-  #ifndef LAYER_ONE_MONOCHROME
+  #else
   vec3 noisy = clamp(color.rgb + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerOneNumColors));
   #endif
@@ -164,13 +162,11 @@ vec4 handleLayerTwo(sampler2D colortex) {
   color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = srgbToLinear(color.rgb);
 
-  #ifdef LAYER_TWO_MONOCHROME
+  #if defined LAYER_TWO_MONOCHROME || defined COLORMAP
   float value = luminance(color.rgb);
   float noisy = clamp(value + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerTwoNumColors));
-  #endif
-
-  #ifndef LAYER_TWO_MONOCHROME
+  #else
   vec3 noisy = clamp(color.rgb + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerTwoNumColors));
   #endif
@@ -187,13 +183,11 @@ vec4 handleLayerThree(sampler2D colortex) {
   color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = srgbToLinear(color.rgb);
 
-  #ifdef LAYER_THREE_MONOCHROME
+  #if defined LAYER_THREE_MONOCHROME || defined COLORMAP
   float value = luminance(color.rgb);
   float noisy = clamp(value + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerThreeNumColors));
-  #endif
-
-  #ifndef LAYER_THREE_MONOCHROME
+  #else
   vec3 noisy = clamp(color.rgb + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerThreeNumColors));
   #endif
@@ -226,12 +220,8 @@ void main() {
   #endif
 
   #ifdef COLORMAP
-  #if defined LAYER_ONE_MONOCHROME && defined LAYER_TWO_MONOCHROME && defined LAYER_THREE_MONOCHROME
-  // float colorSwitch = step(0.5, color.r);
-  // color.rgb = vec3(cmapLight * colorSwitch + cmapDark * (1 - colorSwitch));
   color.rgb = linearToSrgb(oklabToLinear(
                 mix(cmapDark, cmapLight, color.r)));
-  #endif
   #endif
 
   // edge detection and drawing
