@@ -36,6 +36,8 @@
 
 #define CUTOUT_SCALE 1.0 // [0.0625 0.125 0.25 0.5 1.0] Cutout compositing resolution downscale
 
+// #define FORCE_ONE_BIT // forces one bit color after blending transparent passes for better color accuracy
+
 // #define DISPLAY_OPAQUE_CUTOUTS      // Show opaque cutout buffer for debugging
 // #define DISPLAY_TRANSPARENT_CUTOUTS // Show transparent cutout buffer for debugging
 // #define DISPLAY_EDGES               // Show only edges for debugging

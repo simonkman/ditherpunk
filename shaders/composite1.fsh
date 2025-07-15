@@ -40,12 +40,13 @@ const vec4 darkEdgeColor  = vec4(EDGE_DARK_R  / 255.0,
                                  EDGE_DARK_B  / 255.0,
                                  1);
 // colormapping values derived from settings
-const vec3 cmapLight = vec3(CMAP_LIGHT_R   / 255.0,
-                            CMAP_LIGHT_G   / 255.0,
-                            CMAP_LIGHT_B   / 255.0);
-const vec3 cmapDark  = vec3(CMAP_DARK_R    / 255.0,
-                            CMAP_DARK_G    / 255.0,
-                            CMAP_DARK_B    / 255.0);
+// in oklab colorspace to reduce redundant calculations
+vec3 cmapLight = linearToOklab(srgbToLinear(vec3(CMAP_LIGHT_R   / 255.0,
+                                                 CMAP_LIGHT_G   / 255.0,
+                                                 CMAP_LIGHT_B   / 255.0)));
+vec3 cmapDark  = linearToOklab(srgbToLinear(vec3(CMAP_DARK_R    / 255.0,
+                                                 CMAP_DARK_G    / 255.0,
+                                                 CMAP_DARK_B    / 255.0)));
 
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
@@ -220,11 +221,16 @@ void main() {
   color = colorOne * cutouts.r + colorTwo * cutouts.g + colorThree * cutouts.b;
   vec4 trans = transOne * trans_cutouts.r + transTwo * trans_cutouts.g + transThree * trans_cutouts.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
+  #ifdef FORCE_ONE_BIT
+  color.rgb = step(0.5, color.rgb);
+  #endif
 
   #ifdef COLORMAP
   #if defined LAYER_ONE_MONOCHROME && defined LAYER_TWO_MONOCHROME && defined LAYER_THREE_MONOCHROME
-  float colorSwitch = step(0.5, color.r);
-  color.rgb = vec3(cmapLight * colorSwitch + cmapDark * (1 - colorSwitch));
+  // float colorSwitch = step(0.5, color.r);
+  // color.rgb = vec3(cmapLight * colorSwitch + cmapDark * (1 - colorSwitch));
+  color.rgb = linearToSrgb(oklabToLinear(
+                mix(cmapDark, cmapLight, color.r)));
   #endif
   #endif
 
