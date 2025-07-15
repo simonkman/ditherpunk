@@ -22,22 +22,30 @@ float luminance(vec3 color) {
 
 // convert colorspaces
 vec3 srgbToLinear(vec3 color) {
-  return pow(color, vec3(2.2));
+  vec3 cond = step(0.04045, color);
+  return cond * pow(((color + 0.055) / 1.055), vec3(2.4)) +
+         (1 - cond) * (color / 12.92);
 }
 
 // convert colorspaces
 vec3 linearToSrgb(vec3 color) {
-  return pow(color, vec3(1.0 / 2.2));
+  vec3 cond = step(0.0031308, vec3(color));
+  return cond * (1.055 * pow(color, vec3(1.0 / 2.4)) - 0.055) +
+         (1 - cond) * (12.92 * color);
 }
 
 // convert colorspaces
 float srgbToLinear(float color) {
-  return pow(color, 2.2);
+  float cond = step(0.04045, color);
+  return cond * pow(((color + 0.055) / 1.055), 2.4) +
+         (1 - cond) * (color / 12.92);
 }
 
 // convert colorspaces
 float linearToSrgb(float color) {
-  return pow(color, 1.0 / 2.2);
+  float cond = step(0.0031308, color);
+  return cond * (1.055 * pow(color, 1.0 / 2.4) - 0.055) +
+         (1 - cond) * (12.92 * color);
 }
 
 // linearizes depth z.
