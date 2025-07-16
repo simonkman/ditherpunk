@@ -2,6 +2,33 @@
 
 A highly configurable retro shader pack for Minecraft
 
+## Features
+
+- Dithering
+- Color Quantization
+- Render different effects on different render passes
+- Procedurally drawn Edge Lines
+- Downscaling
+- Grayscale color mapping
+- Highly configurable
+- Variety of presets
+
+## Usage
+
+Requires [Iris](https://www.irisshaders.dev/).
+It is also recommended to use [Sodium](https://modrinth.com/mod/sodium)
+to improve performance.
+
+Place a zip file from [Releases](broken link!) or clone this repository
+into `.minecraft/shaderpacks` and activate the shader from your video settings.
+
+It is highly recommended that you try the different presets included.
+Creating your own configurations is also encouraged!
+
+## Compatibility
+
+Works with Minecraft 1.18.2+ and Iris 1.5+
+
 ## Acknowledgements
 
 - Inspired by [Return of the Obra Dinn](https://obradinn.com/) by Lucas Pope
@@ -12,3 +39,8 @@ A highly configurable retro shader pack for Minecraft
   - Björn Ottosson's [Oklab colorspace](https://bottosson.github.io/posts/oklab/)
   - Bálint's [Base 330 shader pack](https://github.com/shaderLABS/Base-330)
   - The [Iris Documentation](https://shaders.properties/)
+
+## Known Issues
+
+- Spectral arrow effects ignore shader effects
+- The edge rendering on leaves is too busy and has terrible pop in
