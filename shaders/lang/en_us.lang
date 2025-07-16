@@ -1,0 +1,72 @@
+// Main Menu Settings
+screen.LAYER_ONE             = Layer One
+screen.LAYER_TWO             = Layer Two
+screen.LAYER_THREE           = Layer Three
+option.LAYERMASK_SCALE       = Layer Mask Scale
+screen.GBUFFERS_LAYER_SELECT = GBuffer Layer Select
+screen.EDGES                 = Edges
+screen.COLORMAP              = Color Map
+screen.DEBUG                 = Debug
+
+// Edge Settings
+option.DRAW_EDGES = Draw Edge Lines
+option.EDGE_DEPTH_FAR_CUTOFF = Depth Cutoff
+option.EDGE_DEPTH_THRESHOLD = Depth Based Edges Sensitivity
+option.EDGE_DARK_LIGHT_THRESHOLD = Dark/Light Edges Threshold
+option.EDGE_LIGHT_R = Light Edge Color (R)
+option.EDGE_LIGHT_G = Light Edge Color (G)
+option.EDGE_LIGHT_B = Light Edge Color (B)
+option.EDGE_DARK_R = Dark Edge Color (R)
+option.EDGE_DARK_G = Dark Edge Color (G)
+option.EDGE_DARK_B = Dark Edge Color (B)
+option.EDGE_USE_GBUFFFER_BOUNDARIES = Draw GBuffer Boundary Edges
+option.EDGE_GBUFFER_USE_DEPTH = GBuffer Edges Use Depth Cutoff
+option.EDGE_USE_DEPTH         = Draw Depth Edges
+option.EDGE_USE_NORMALS       = Draw Facet Normal Edges
+option.EDGE_NORMALS_USE_DEPTH = Normal Edges Use Depth Cutoff
+
+// Color Map Settings
+option.COLORMAP = Color Map
+option.CMAP_LIGHT_R = Light Color (R)
+option.CMAP_LIGHT_G = Light Color (G)
+option.CMAP_LIGHT_B = Light Color (B)
+option.CMAP_DARK_R = Dark Color (R)
+option.CMAP_DARK_G = Dark Color (G)
+option.CMAP_DARK_B = Dark Color (B)
+option.FORCE_ONE_BIT = Force 1-Bit
+
+// Layer 1 Settings
+option.LAYER_ONE_MONOCHROME = Monochrome
+option.LAYER_ONE_SCALE      = Scale
+option.LAYER_ONE_BIT_DEPTH  = Bit Depth
+option.LAYER_ONE_DITHER     = Dither
+option.LAYER_ONE_BAYER_SIZE = Bayer Matrix Size
+
+value.LAYER_ONE_DITHER.0 = None
+value.LAYER_ONE_DITHER.1 = White Noise
+value.LAYER_ONE_DITHER.2 = Blue Noise
+value.LAYER_ONE_DITHER.3 = Bayer Matrix
+
+// Layer 2 Settings
+option.LAYER_TWO_MONOCHROME = Monochrome
+option.LAYER_TWO_SCALE      = Scale
+option.LAYER_TWO_BIT_DEPTH  = Bit Depth
+option.LAYER_TWO_DITHER     = Dither
+option.LAYER_TWO_BAYER_SIZE = Bayer Matrix Size
+
+value.LAYER_TWO_DITHER.0 = None
+value.LAYER_TWO_DITHER.1 = White Noise
+value.LAYER_TWO_DITHER.2 = Blue Noise
+value.LAYER_TWO_DITHER.3 = Bayer Matrix
+
+// Layer 3 Settings
+option.LAYER_THREE_MONOCHROME = Monochrome
+option.LAYER_THREE_SCALE      = Scale
+option.LAYER_THREE_BIT_DEPTH  = Bit Depth
+option.LAYER_THREE_DITHER     = Dither
+option.LAYER_THREE_BAYER_SIZE = Bayer Matrix Size
+
+value.LAYER_THREE_DITHER.0 = None
+value.LAYER_THREE_DITHER.1 = White Noise
+value.LAYER_THREE_DITHER.2 = Blue Noise
+value.LAYER_THREE_DITHER.3 = Bayer Matrix

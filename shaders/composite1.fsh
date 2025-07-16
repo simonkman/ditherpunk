@@ -6,10 +6,10 @@
 #include /lib/convolution.glsl
 
 uniform sampler2D colortex0;  // all opaque passes
-uniform sampler2D colortex1;  // layers/cutouts for sobel filter edges
+uniform sampler2D colortex1;  // gbuffer boundaries for sobel filter edges
 uniform sampler2D colortex10; // transparent pass, was supposed to be colortex1 but alpha wasn't working on it?
-uniform sampler2D colortex2;  // cutouts for opaque compositing, layers (1,2,3) are the (r,g,b) components
-uniform sampler2D colortex3;  // cutouts for transparent compositing, layers (1,2,3) are the (r,g,b) components
+uniform sampler2D colortex2;  // layermask for opaque compositing, layers (1,2,3) are the (r,g,b) components
+uniform sampler2D colortex3;  // layermask for transparent compositing, layers (1,2,3) are the (r,g,b) components
 uniform sampler2D colortex11; // modified depth buffer
 uniform sampler2D colortex12; // normal data
 uniform sampler2D colortex4;  // blue noise
@@ -206,14 +206,14 @@ void main() {
   vec4 transTwo   = handleLayerTwo(colortex10);
   vec4 transThree = handleLayerThree(colortex10);
 
-  vec2 tmp = ceil(gl_FragCoord.xy * CUTOUT_SCALE) / CUTOUT_SCALE;
+  vec2 tmp = ceil(gl_FragCoord.xy * LAYERMASK_SCALE) / LAYERMASK_SCALE;
   ivec2 dsFragCoord = ivec2(tmp.x, tmp.y);
-	vec4 cutouts = texelFetch(colortex2, dsFragCoord, 0);
-  vec4 trans_cutouts = texelFetch(colortex3, dsFragCoord, 0);
+	vec4 layermask = texelFetch(colortex2, dsFragCoord, 0);
+  vec4 trans_layermask = texelFetch(colortex3, dsFragCoord, 0);
 
-  // composite cutouts and alpha blend transparent layers
-  color = colorOne * cutouts.r + colorTwo * cutouts.g + colorThree * cutouts.b;
-  vec4 trans = transOne * trans_cutouts.r + transTwo * trans_cutouts.g + transThree * trans_cutouts.b;
+  // composite layermask and alpha blend transparent layers
+  color = colorOne * layermask.r + colorTwo * layermask.g + colorThree * layermask.b;
+  vec4 trans = transOne * trans_layermask.r + transTwo * trans_layermask.g + transThree * trans_layermask.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
   #ifdef FORCE_ONE_BIT
   color.rgb = step(0.5, color.rgb);
@@ -272,10 +272,10 @@ void main() {
   #endif
 
   #ifdef DISPLAY_OPAQUE_CUTOUTS
-  color = cutouts;
+  color = layermask;
   #endif
   #ifdef DISPLAY_TRANSPARENT_CUTOUTS
-  color = trans_cutouts;
+  color = trans_layermask;
   #endif
   #ifdef DISPLAY_EDGES
   color = vec4(edges);
