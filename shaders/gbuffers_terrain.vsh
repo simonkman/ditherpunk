@@ -7,6 +7,9 @@ out vec2 texcoord;
 out vec4 glcolor;
 out vec3 normal;
 
+in vec2 mc_Entity;
+flat out float blockId;
+
 void main() {
 	gl_Position = ftransform();
 	texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
@@ -14,4 +17,5 @@ void main() {
 	glcolor = gl_Color;
   normal = gl_NormalMatrix * gl_Normal;
   normal = mat3(gbufferModelViewInverse) * normal;
+  blockId = mc_Entity.x;
 }

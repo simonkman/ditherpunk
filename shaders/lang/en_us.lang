@@ -1,13 +1,14 @@
 // Main Menu Settings
-screen.LAYER_ONE             = Layer One
-screen.LAYER_TWO             = Layer Two
-screen.LAYER_THREE           = Layer Three
-option.PRE_BLEND_ALPHA       = Pre Blend Alpha
-option.LAYERMASK_SCALE       = Layer Mask Scale
-screen.GBUFFERS_LAYER_SELECT = GBuffer Layer Select
-screen.EDGES                 = Edges
-screen.COLORMAP              = Color Map
-screen.DEBUG                 = Debug
+screen.LAYER_ONE                   = Layer One
+screen.LAYER_TWO                   = Layer Two
+screen.LAYER_THREE                 = Layer Three
+screen.GBUFFERS_LAYER_SELECT       = GBuffer Layer Select
+screen.EDGES                       = Edges
+screen.COLORMAP                    = Color Map
+screen.DEBUG                       = Debug
+option.LAYERMASK_SCALE             = Layer Mask Scale
+option.PRE_BLEND_ALPHA             = Pre Blend Alpha
+option.DISABLE_LEAVES_TRANSPARENCY = Disable Transparent Leaves
 
 // Edge Settings
 option.DRAW_EDGES = Draw Edge Lines

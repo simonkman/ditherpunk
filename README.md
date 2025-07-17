@@ -43,4 +43,3 @@ Works with Minecraft 1.18.2+ and Iris 1.5+
 ## Known Issues
 
 - Spectral arrow effects ignore shader effects
-- The edge rendering on leaves is too busy and has terrible pop in
