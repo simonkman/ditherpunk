@@ -2,6 +2,7 @@
 screen.LAYER_ONE             = Layer One
 screen.LAYER_TWO             = Layer Two
 screen.LAYER_THREE           = Layer Three
+option.PRE_BLEND_ALPHA       = Pre Blend Alpha
 option.LAYERMASK_SCALE       = Layer Mask Scale
 screen.GBUFFERS_LAYER_SELECT = GBuffer Layer Select
 screen.EDGES                 = Edges

@@ -9,7 +9,9 @@ uniform sampler2D colortex0;  // all opaque passes
 uniform sampler2D colortex1;  // gbuffer boundaries for sobel filter edges
 uniform sampler2D colortex10; // transparent pass, was supposed to be colortex1 but alpha wasn't working on it?
 uniform sampler2D colortex2;  // layermask for opaque compositing, layers (1,2,3) are the (r,g,b) components
+#ifndef PRE_BLEND_ALPHA
 uniform sampler2D colortex3;  // layermask for transparent compositing, layers (1,2,3) are the (r,g,b) components
+#endif
 uniform sampler2D colortex11; // modified depth buffer
 uniform sampler2D colortex12; // normal data
 uniform sampler2D colortex4;  // blue noise
@@ -202,21 +204,21 @@ void main() {
   vec4 colorOne   = handleLayerOne(colortex0);
   vec4 colorTwo   = handleLayerTwo(colortex0);
   vec4 colorThree = handleLayerThree(colortex0);
-  vec4 transOne   = handleLayerOne(colortex10);
-  vec4 transTwo   = handleLayerTwo(colortex10);
-  vec4 transThree = handleLayerThree(colortex10);
 
+  // sample layermasks at downscaled resolution
   vec2 tmp = ceil(gl_FragCoord.xy * LAYERMASK_SCALE) / LAYERMASK_SCALE;
   ivec2 dsFragCoord = ivec2(tmp.x, tmp.y);
 	vec4 layermask = texelFetch(colortex2, dsFragCoord, 0);
-  vec4 trans_layermask = texelFetch(colortex3, dsFragCoord, 0);
 
   // composite layermask and alpha blend transparent layers
   color = colorOne * layermask.r + colorTwo * layermask.g + colorThree * layermask.b;
-  vec4 trans = transOne * trans_layermask.r + transTwo * trans_layermask.g + transThree * trans_layermask.b;
+  #ifndef PRE_BLEND_ALPHA
+  vec4 transOne   = handleLayerOne(colortex10);
+  vec4 transTwo   = handleLayerTwo(colortex10);
+  vec4 transThree = handleLayerThree(colortex10);
+  vec4 transLayermask = texelFetch(colortex3, dsFragCoord, 0);
+  vec4 trans = transOne * transLayermask.r + transTwo * transLayermask.g + transThree * transLayermask.b;
   color.rgb = color.rgb * (1 - trans.a) + trans.rgb;
-  #ifdef FORCE_ONE_BIT
-  color.rgb = step(0.5, color.rgb);
   #endif
 
   #ifdef COLORMAP
