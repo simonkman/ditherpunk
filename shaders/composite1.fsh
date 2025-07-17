@@ -282,10 +282,13 @@ void main() {
   #ifdef DISPLAY_EDGES
   color = vec4(edges);
   #endif
+  #ifdef DISPLAY_GBUFFER_BOUNDARIES
+  color = vec4(texture(colortex1, texcoord).rrr, 1);
+  #endif
   #ifdef DISPLAY_NORMALS
   color = texture(colortex12, texcoord);
   #endif
   #ifdef DISPLAY_DEPTH
-  color = vec4(texture(colortex11, texcoord).r);
+  color = vec4(texture(colortex11, texcoord).rrr, 1);
   #endif
 }

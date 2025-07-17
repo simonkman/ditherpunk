@@ -42,8 +42,9 @@
 // #define DISPLAY_OPAQUE_CUTOUTS      // Show opaque layermask buffer for debugging
 // #define DISPLAY_TRANSPARENT_CUTOUTS // Show transparent layermask buffer for debugging
 // #define DISPLAY_EDGES               // Show only edges for debugging
+// #define DISPLAY_GBUFFER_BOUNDARIES  // Show gbuffer boundaries
 // #define DISPLAY_NORMALS             // Show normals for debugging
-// #define DISPLAY_DEPTH             // Show linear depth for debugging
+// #define DISPLAY_DEPTH               // Show linear depth for debugging
 
 // =============================
 // ==========LAYER_ONE==========
