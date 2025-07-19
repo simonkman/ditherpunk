@@ -19,8 +19,9 @@ Requires [Iris](https://www.irisshaders.dev/).
 It is also recommended to use [Sodium](https://modrinth.com/mod/sodium)
 to improve performance.
 
-Place a zip file from [Releases](broken link!) or clone this repository
-into `.minecraft/shaderpacks` and activate the shader from your video settings.
+Place a zip file from releases on [Github](https://github.com/simonkman/ditherpunk/releases/), 
+[Modrinth](https://modrinth.com/shader/ditherpunk/versions),
+or clone this repository into `.minecraft/shaderpacks` and activate the shader from your video settings.
 
 It is highly recommended that you try the different presets included.
 Creating your own configurations is also encouraged!
