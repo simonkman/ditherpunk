@@ -10,32 +10,63 @@ option.LAYERMASK_SCALE             = Layer Mask Scale
 option.PRE_BLEND_ALPHA             = Pre Blend Alpha
 option.DISABLE_LEAVES_TRANSPARENCY = Disable Transparent Leaves
 
+option.LAYERMASK_SCALE.comment             = Recommended to set this to the highest resolution your config uses
+option.PRE_BLEND_ALPHA.comment             = Don't process transparent blocks/entities separately. Enforces bit-depth accuracy
+option.DISABLE_LEAVES_TRANSPARENCY.comment = Removes cutout transparency for leaves. Recommended if you are using edge lines
+
+// Profiles
+profile.comment = Obra Dinn - Inspired by Return of The Obra Dinn by Lucas Pope. Macintosh - Apple Macintosh 128K (1984). PS1 - Sony PlayStation (1994). Gameboy - Nintendo Game Boy (1989). Virtualboy - Nintendo Virtual Boy (1995). Basic - Vanilla Minecraft, good start to customization.
+
 // Edge Settings
-option.DRAW_EDGES = Draw Edge Lines
-option.EDGE_DEPTH_FAR_CUTOFF = Depth Cutoff
-option.EDGE_DEPTH_THRESHOLD = Depth Based Edges Sensitivity
-option.EDGE_DARK_LIGHT_THRESHOLD = Dark/Light Edges Threshold
-option.EDGE_LIGHT_R = Light Edge Color (R)
-option.EDGE_LIGHT_G = Light Edge Color (G)
-option.EDGE_LIGHT_B = Light Edge Color (B)
-option.EDGE_DARK_R = Dark Edge Color (R)
-option.EDGE_DARK_G = Dark Edge Color (G)
-option.EDGE_DARK_B = Dark Edge Color (B)
-option.EDGE_USE_GBUFFFER_BOUNDARIES = Draw GBuffer Boundary Edges
-option.EDGE_GBUFFER_USE_DEPTH = GBuffer Edges Use Depth Cutoff
-option.EDGE_USE_DEPTH         = Draw Depth Edges
-option.EDGE_USE_NORMALS       = Draw Facet Normal Edges
-option.EDGE_NORMALS_USE_DEPTH = Normal Edges Use Depth Cutoff
+option.DRAW_EDGES                  = Draw Edge Lines
+option.EDGE_DEPTH_FAR_CUTOFF       = Depth Cutoff
+option.EDGE_DEPTH_THRESHOLD        = Depth Based Edges Sensitivity
+option.EDGE_DARK_LIGHT_THRESHOLD   = Dark/Light Edges Threshold
+option.EDGE_LIGHT_R                = Light Edge Color (R)
+option.EDGE_LIGHT_G                = Light Edge Color (G)
+option.EDGE_LIGHT_B                = Light Edge Color (B)
+option.EDGE_DARK_R                 = Dark Edge Color (R)
+option.EDGE_DARK_G                 = Dark Edge Color (G)
+option.EDGE_DARK_B                 = Dark Edge Color (B)
+option.EDGE_USE_GBUFFER_BOUNDARIES = Draw GBuffer Boundary Edges
+option.EDGE_GBUFFER_USE_DEPTH      = GBuffer Edges Use Depth Cutoff
+option.EDGE_USE_DEPTH              = Draw Depth Edges
+option.EDGE_USE_NORMALS            = Draw Facet Normal Edges
+option.EDGE_NORMALS_USE_DEPTH      = Normal Edges Use Depth Cutoff
+
+option.EDGE_DEPTH_FAR_CUTOFF.comment       = Stops edges from being drawn past a certain distance. Must be enabled for gbuffer boundary edges and normal edges
+option.EDGE_DEPTH_THRESHOLD.comment        = Determines the minimum distance between geometry for a depth based edge to be drawn
+option.EDGE_DARK_LIGHT_THRESHOLD.comment   = Grayscale values greater than this are drawn with the dark color. Values less than or equal to this will be drawn with the light color
+option.EDGE_USE_GBUFFER_BOUNDARIES.comment = Draws edges between different render passes (e.g. sky vs terrain, terrain vs water, etc)
 
 // Color Map Settings
 option.COLORMAP = Color Map
 option.CMAP_LIGHT_R = Light Color (R)
 option.CMAP_LIGHT_G = Light Color (G)
 option.CMAP_LIGHT_B = Light Color (B)
-option.CMAP_DARK_R = Dark Color (R)
-option.CMAP_DARK_G = Dark Color (G)
-option.CMAP_DARK_B = Dark Color (B)
-option.FORCE_ONE_BIT = Force 1-Bit
+option.CMAP_DARK_R  = Dark Color (R)
+option.CMAP_DARK_G  = Dark Color (G)
+option.CMAP_DARK_B  = Dark Color (B)
+
+option.COLORMAP.comment = Maps the grayscale values of the rendered image to a gradient between two inputted colors
+
+// Gbuffer Layer Select
+option.GBUFFERS_ARMOR_GLINT_LAYER.comment  = armor glint overlay
+option.GBUFFERS_BASIC_LAYER.comment        = block selection, fishing line, leash
+option.GBUFFERS_BEACONBEAM_LAYER.comment   = beacon beam
+option.GBUFFERS_BLOCK_LAYER.comment        = block/tile entities
+option.GBUFFERS_CLOUDS_LAYER.comment       = clouds
+option.GBUFFERS_ENTITIES_LAYER.comment     = entities
+option.GBUFFERS_HAND_LAYER.comment         = hand, opaque handheld items
+option.GBUFFERS_HAND_WATER_LAYER.comment   = translucent handheld items
+option.GBUFFERS_SKYBASIC_LAYER.comment     = sky, horizon, stars, void
+option.GBUFFERS_SKYTEXTURED_LAYER.comment  = sun, moon
+option.GBUFFERS_SPIDEREYES_LAYER.comment   = eyes of spiders, endermen, enderdragons
+option.GBUFFERS_TERRAIN_LAYER.comment      = opaque geometry (including cutout transparency), damaged block overlay
+option.GBUFFERS_TEXTURED_LAYER.comment     = particles
+option.GBUFFERS_TEXTURED_LIT_LAYER.comment = lit/emissive particles, world border
+option.GBUFFERS_WATER_LAYER.comment        = translucent geometry
+option.GBUFFERS_WEATHER_LAYER.comment      = rain, snow
 
 // Layer 1 Settings
 option.LAYER_ONE_MONOCHROME = Monochrome
