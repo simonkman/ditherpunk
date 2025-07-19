@@ -234,7 +234,7 @@ void main() {
   float edge;
   float depth = texture(colortex11, texcoord).r;
   float depthCutoff = step(EDGE_DEPTH_FAR_CUTOFF, depth);
-  #ifdef EDGE_USE_GBUFFFER_BOUNDARIES
+  #ifdef EDGE_USE_GBUFFER_BOUNDARIES
   grad.x = grayConvolve3(sobelX, colortex1, gl_FragCoord.xy);
   grad.y = grayConvolve3(sobelY, colortex1, gl_FragCoord.xy);
   edge = step(0.01, length(grad));
