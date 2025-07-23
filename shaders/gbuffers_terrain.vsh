@@ -1,6 +1,6 @@
 #version 330 compatibility
 
-#include /lib/settings.glsl
+#include "/lib/settings.glsl"
 
 uniform mat4 gbufferModelViewInverse;
 

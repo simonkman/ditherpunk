@@ -1,7 +1,7 @@
 #version 330 compatibility
 
-#include /lib/settings.glsl
-#include /lib/edge_layers.glsl
+#include "/lib/settings.glsl"
+#include "/lib/edge_layers.glsl"
 
 uniform sampler2D lightmap;
 

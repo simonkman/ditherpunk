@@ -1,9 +1,9 @@
 #version 330 compatibility
 
-#include /lib/settings.glsl
-#include /lib/dither.glsl
-#include /lib/util.glsl
-#include /lib/convolution.glsl
+#include "/lib/settings.glsl"
+#include "/lib/dither.glsl"
+#include "/lib/util.glsl"
+#include "/lib/convolution.glsl"
 
 uniform sampler2D colortex0;  // all opaque passes
 uniform sampler2D colortex1;  // gbuffer boundaries for sobel filter edges

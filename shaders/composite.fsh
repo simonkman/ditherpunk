@@ -1,7 +1,7 @@
 #version 330 compatibility
 
-#include /lib/settings.glsl
-#include /lib/util.glsl
+#include "/lib/settings.glsl"
+#include "/lib/util.glsl"
 
 uniform sampler2D depthtex0;
 uniform sampler2D colortex0;

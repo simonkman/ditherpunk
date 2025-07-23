@@ -1,7 +1,7 @@
 #ifndef LIB_CONVOLUTION_GLSL
 #define LIB_CONVOLUTION_GLSL
 
-#include util.glsl
+#include "util.glsl"
 
 // Sobel operators (kernels) for x and y
 // remember, these are stored in column major format, so it will look flipped
