@@ -31,8 +31,9 @@ option.EDGE_DARK_B                 = Dark Edge Color (B)
 option.EDGE_USE_GBUFFER_BOUNDARIES = Draw GBuffer Boundary Edges
 option.EDGE_GBUFFER_USE_DEPTH      = GBuffer Edges Use Depth Cutoff
 option.EDGE_USE_DEPTH              = Draw Depth Edges
-option.EDGE_USE_NORMALS            = Draw Facet Normal Edges
+option.EDGE_USE_NORMALS            = Draw Surface Normal Edges
 option.EDGE_NORMALS_USE_DEPTH      = Normal Edges Use Depth Cutoff
+option.EDGE_IGNORE_WEATHER         = Ignore Weather
 
 option.EDGE_DEPTH_FAR_CUTOFF.comment       = Stops edges from being drawn past a certain distance. Must be enabled for gbuffer boundary edges and normal edges
 option.EDGE_DEPTH_THRESHOLD.comment        = Determines the minimum distance between geometry for a depth based edge to be drawn

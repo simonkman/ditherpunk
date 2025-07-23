@@ -16,8 +16,10 @@ in vec3 normal;
 /* RENDERTARGETS: 10,3,1,12 */
 layout(location = 0) out vec4 color;
 layout(location = 1) out vec4 layermask; // layermask to break up image later
+#ifndef EDGE_IGNORE_WEATHER
 layout(location = 2) out vec4 edgeLayers; // copy for sobel filter
 layout(location = 3) out vec4 encodedNormal;
+#endif
 
 void main() {
 	color = texture(gtexture, texcoord) * glcolor;
@@ -34,6 +36,9 @@ void main() {
   #if GBUFFERS_WEATHER_LAYER == 3
   layermask = vec4(0, 0, 1, 1);
   #endif
+
+  #ifndef EDGE_IGNORE_WEATHER
   encodedNormal = vec4(normal * 0.5 + 0.5, 1.0);
   edgeLayers = weather;
+  #endif
 }
