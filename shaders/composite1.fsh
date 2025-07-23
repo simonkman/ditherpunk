@@ -42,13 +42,15 @@ const vec4 darkEdgeColor  = vec4(EDGE_DARK_R  / 255.0,
                                  EDGE_DARK_B  / 255.0,
                                  1);
 // colormapping values derived from settings
-// in oklab colorspace to reduce redundant calculations
-vec3 cmapLight = linearToOklab(srgbToLinear(vec3(CMAP_LIGHT_R   / 255.0,
-                                                 CMAP_LIGHT_G   / 255.0,
-                                                 CMAP_LIGHT_B   / 255.0)));
-vec3 cmapDark  = linearToOklab(srgbToLinear(vec3(CMAP_DARK_R    / 255.0,
-                                                 CMAP_DARK_G    / 255.0,
-                                                 CMAP_DARK_B    / 255.0)));
+// in oklab colorspace to reduce redundant calculations.
+// These need to have functions applied to them in main or else
+// it crashes on MAC ONLY. This was so painful to figure out.
+vec3 cmapLight = vec3(CMAP_LIGHT_R   / 255.0,
+                      CMAP_LIGHT_G   / 255.0,
+                      CMAP_LIGHT_B   / 255.0);
+vec3 cmapDark  = vec3(CMAP_DARK_R    / 255.0,
+                      CMAP_DARK_G    / 255.0,
+                      CMAP_DARK_B    / 255.0);
 
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
@@ -200,6 +202,9 @@ vec4 handleLayerThree(sampler2D colortex) {
 // =========LAYER HANDLING END=========
 
 void main() {
+  cmapLight = linearToOklab(srgbToLinear(cmapLight));
+  cmapDark  = linearToOklab(srgbToLinear(cmapDark));
+
   // process opaque and transparent layers
   vec4 colorOne   = handleLayerOne(colortex0);
   vec4 colorTwo   = handleLayerTwo(colortex0);
