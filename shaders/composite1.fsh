@@ -282,7 +282,7 @@ void main() {
   color = layermask;
   #endif
   #ifdef DISPLAY_TRANSPARENT_CUTOUTS
-  color = trans_layermask;
+  color = transLayermask;
   #endif
   #ifdef DISPLAY_EDGES
   color = vec4(edges);
