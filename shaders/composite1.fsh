@@ -17,6 +17,10 @@ uniform sampler2D colortex12; // normal data
 uniform sampler2D colortex4;  // blue noise
 uniform sampler2D noisetex;   // white noise
 
+// used to get camera fov and orientation
+uniform mat4 gbufferProjection;
+uniform mat4 gbufferModelViewInverse;
+
 uniform float viewHeight;
 uniform float viewWidth;
 uniform float near;
@@ -52,8 +56,37 @@ vec3 cmapDark  = vec3(CMAP_DARK_R    / 255.0,
                       CMAP_DARK_G    / 255.0,
                       CMAP_DARK_B    / 255.0);
 
+// offset for dithering if offsetting the screen-mapped pattern.
+// value must be calculated and set in calcDitherOffset for this to work.
+// Defaults to zero in case option is turned off.
+vec2 ditherOffset = vec2(0, 0);
+
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
+
+// Calculate offset for dithering that moves dither pattern with camera rotation.
+// Must be run before any dither calcs since this modifies a global variable.
+// Got from Lucas Pope's devlog "Screen-mapping with Offset"
+void calcDitherOffset() {
+  // (vertical fov, horizontal fov). minecraft's fov setting is vertical
+  // equations derived from geometry of viewing frustrum
+  vec2 fov;
+  fov.x = 2.0 * atan(1.0, gbufferProjection[0][0]);
+  fov.y = 2.0 * atan(1.0, gbufferProjection[1][1]);
+
+  // a vector in world space that points in the orientation of the camera
+  // not sure why you have to multiply by -1, found this through experimentation
+  vec3 cameraDirection = -1 * (mat3(gbufferModelViewInverse) * vec3(0, 0, 1));
+
+  // get rotation of camera in spherical coordinates,
+  // where polar axis is +y instead of z
+  float polar   = atan(length(cameraDirection.xz), cameraDirection.y);
+  float azimuth = atan(cameraDirection.x, cameraDirection.z);
+
+  // offset one screen worth for one fov worth of rotation
+  ditherOffset.x = -1 * viewWidth * azimuth / fov.x;
+  ditherOffset.y = -1 * viewHeight * polar / fov.y;
+}
 
 // ==========DITHER FUNCTIONS==========
 // dither functions for each layer
@@ -145,12 +178,14 @@ vec4 handleLayerOne(sampler2D colortex) {
   color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = srgbToLinear(color.rgb);
 
+  vec2 dsDitherOffset = ditherOffset * LAYER_ONE_SCALE;
+
   #if defined LAYER_ONE_MONOCHROME || defined COLORMAP
   float value = luminance(color.rgb);
-  float noisy = clamp(value + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
+  float noisy = clamp(value + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE + dsDitherOffset) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerOneNumColors));
   #else
-  vec3 noisy = clamp(color.rgb + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
+  vec3 noisy = clamp(color.rgb + (layerOneDither(dsFragCoord * LAYER_ONE_SCALE + dsDitherOffset) - 0.5) / (layerOneNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerOneNumColors));
   #endif
 
@@ -166,12 +201,14 @@ vec4 handleLayerTwo(sampler2D colortex) {
   color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = srgbToLinear(color.rgb);
 
+  vec2 dsDitherOffset = ditherOffset * LAYER_TWO_SCALE;
+
   #if defined LAYER_TWO_MONOCHROME || defined COLORMAP
   float value = luminance(color.rgb);
-  float noisy = clamp(value + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
+  float noisy = clamp(value + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE + dsDitherOffset) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerTwoNumColors));
   #else
-  vec3 noisy = clamp(color.rgb + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
+  vec3 noisy = clamp(color.rgb + (layerTwoDither(dsFragCoord * LAYER_TWO_SCALE + dsDitherOffset) - 0.5) / (layerTwoNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerTwoNumColors));
   #endif
 
@@ -187,12 +224,14 @@ vec4 handleLayerThree(sampler2D colortex) {
   color = texelFetch(colortex, dsFragCoord, 0);
   color.rgb = srgbToLinear(color.rgb);
 
+  vec2 dsDitherOffset = ditherOffset * LAYER_THREE_SCALE;
+
   #if defined LAYER_THREE_MONOCHROME || defined COLORMAP
   float value = luminance(color.rgb);
-  float noisy = clamp(value + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
+  float noisy = clamp(value + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE + dsDitherOffset) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = vec3(uniformQuantize(noisy, layerThreeNumColors));
   #else
-  vec3 noisy = clamp(color.rgb + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
+  vec3 noisy = clamp(color.rgb + (layerThreeDither(dsFragCoord * LAYER_THREE_SCALE + dsDitherOffset) - 0.5) / (layerThreeNumColors - 1), 0.0, 1.0);
   color.rgb = uniformQuantize(noisy, vec3(layerThreeNumColors));
   #endif
 
@@ -202,6 +241,10 @@ vec4 handleLayerThree(sampler2D colortex) {
 // =========LAYER HANDLING END=========
 
 void main() {
+  #ifdef OFFSET_DITHER_BY_ROTATION
+  calcDitherOffset();
+  #endif
+
   cmapLight = linearToOklab(srgbToLinear(cmapLight));
   cmapDark  = linearToOklab(srgbToLinear(cmapDark));
 

@@ -7,10 +7,12 @@ screen.EDGES                       = Edges
 screen.COLORMAP                    = Color Map
 screen.DEBUG                       = Debug
 option.LAYERMASK_SCALE             = Layer Mask Scale
+option.OFFSET_DITHER_BY_ROTATION   = Offset Dither by Rotation
 option.PRE_BLEND_ALPHA             = Pre Blend Alpha
 option.DISABLE_LEAVES_TRANSPARENCY = Disable Transparent Leaves
 
 option.LAYERMASK_SCALE.comment             = Recommended to set this to the highest resolution your config uses
+option.OFFSET_DITHER_BY_ROTATION.comment   = Dither pattern will move with camera rotation, making the pattern appear fixed to objects (works best in center of vision or with small FOV while stationary)
 option.PRE_BLEND_ALPHA.comment             = Don't process transparent blocks/entities separately. Enforces bit-depth accuracy
 option.DISABLE_LEAVES_TRANSPARENCY.comment = Removes cutout transparency for leaves. Recommended if you are using edge lines
 

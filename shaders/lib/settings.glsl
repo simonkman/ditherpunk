@@ -12,6 +12,8 @@
 
 #define LAYERMASK_SCALE 0.5 // [0.0625 0.125 0.25 0.5 1.0] Cutout compositing resolution downscale
 
+#define OFFSET_DITHER_BY_ROTATION // moves dither pattern with camera rotation
+
 #define PRE_BLEND_ALPHA // blends transparent passes before processing layers
 
 #define DISABLE_LEAVES_TRANSPARENCY // disable cutout transparency for leaves

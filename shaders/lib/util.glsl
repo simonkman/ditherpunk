@@ -1,5 +1,8 @@
 #ifndef LIB_UTIL_GLSL
 #define LIB_UTIL_GLSL
+
+#define PI 3.1415926535897932385
+
 // quantize x in range [0.0, 1.0] to uniformally distributed steps
 float uniformQuantize(float x, float steps) {
   return floor(x * (steps - 1) + 0.5) / (steps - 1);
